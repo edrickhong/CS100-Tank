@@ -1,0 +1,70 @@
+;
+;	CS 100 Data File
+;	Due Date:
+;	Student Name:
+;	Section:
+
+;	TITLE "CS_100_Data"
+; © 2015 DigiPen, All Rights Reserved.
+
+; The values saved for VAL1_H, 1_L, 2_H, and 2_L can all be changed in this file only.
+; Do NOT attempt to change the names of VAL1_H, VAL2, etc.
+; In the end, your code should multiply the numbers listed below.
+; In the default example, you would be expected to multiply
+; 0x123456789ABCDEF0 x 0x0FEDCBA987654321 = ?
+
+VAL1_H EQU 0X12345678 ; The Higher 4 bytes of 0x123456789ABCDEF0
+VAL1_L EQU 0X9ABCDEF0 ; The Lower 4 bytes of 0x123456789ABCDEF0
+VAL2_H EQU 0X0FEDCBA9 ; The Higher 4 bytes of 0x0FEDCBA987654321
+VAL2_L EQU 0X87654321 ; The Lower 4 bytes of 0x0FEDCBA987654321
+	
+	
+;This acts like a DDR
+FIODR0 equ 0x2009C000
+FIODR1 equ 0x2009C020
+FIODR2 equ 0x2009C040
+FIODR3 equ 0x2009C060
+FIODR4 equ 0x2009C080
+	
+FIOSET0 equ 0x2009C018
+FIOSET1 equ 0x2009C038
+FIOSET2 equ 0x2009C058
+FIOSET3 equ 0x2009C078
+FIOSET4 equ 0x2009C098
+	
+FIOCLR0 equ 0x2009C01C
+FIOCLR1 equ 0x2009C03C
+FIOCLR2 equ 0x2009C05C
+FIOCLR3 equ 0x2009C07C
+FIOCLR4 equ 0x2009C09C
+
+;This acts like PORT
+PIN0 equ 0x2009C014	
+PIN1 equ 0x2009C034
+PIN2 equ 0x2009C054
+PIN3 equ 0x2009C074
+PIN4 equ 0x2009C094
+	
+	
+;This sets the built in pull up resistor
+PINMODE0 equ   0x4002C040
+PINMODE1 equ   0x4002C044
+PINMODE2 equ   0x4002C048
+PINMODE3 equ   0x4002C04C
+PINMODE4 equ   0x4002C050
+PINMODE5 equ   0x4002C054
+PINMODE6 equ   0x4002C058
+PINMODE7 equ   0x4002C05C
+PINMODE8 equ   0x4002C060
+PINMODE9 equ   0x4002C064
+		
+
+	
+	
+
+	
+
+	AREA DATAAREA, DATA ; HEY, ASSEMBLER: GIMME 16 bytes SPACE IN DATA MEMORY
+RESULT SPACE 16; IN FACT, I WANT 16BYTES IN DATA MEMORY. LET'S LABEL IT 'RESULT'.
+
+	END
