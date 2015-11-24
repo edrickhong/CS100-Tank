@@ -46,7 +46,7 @@ __main; R0 IS TEMP REGISTER
 CONFIG_IO; GET ALL VALUES FROM .INC FILE AND 
 
 
-  LDR R0,=FIODR2; ; buzzer and lights
+ LDR R0,=FIODR2; ; buzzer and lights
  MOV R1,#2_0000000000000000000000111111111; 
  STR R1,[R0]; MAKES ALL 9 LSB ON PORT 2 OUTPUTS
  LDR R0,=FIODR0;
@@ -54,22 +54,20 @@ CONFIG_IO; GET ALL VALUES FROM .INC FILE AND
  STR R1,[R0]
  MOV R4,#1; CLEAR R2 COUNTER
  BL INIT_PWM
- 
- bl Init_ADC
+ BL INIT_ADC
  SETBITS #(1 << 24),0x40034000 ; tell adc to start reading
- 
  
  ;r0 is my result register
   
 Handle_Input
 
-	bl Start_Converting_Y
+	BL Start_Converting_Y
 	LDR R1,=0X4001800C	; this is the prescalar register
 	;shift the result right by 4
 	;clear all other bits
-	asr r7,#4
-	bic r7,#2_11111111111111111111111111110000
-	str r7,[r1]
+	ASR r7,#4
+	BIC r7,#2_11111111111111111111111111110000
+	STR r7,[r1]
 
  B Handle_Input
 
@@ -80,10 +78,10 @@ INIT_PWM
 ;3. Peripheral clock: In the PCLKSEL0 register (Table 40), select PCLK_PWM1.  Set bit 12 at 0x400F C1A8 (Clock input to PWM 1:1)
  SETBITS #0X1000,0x400FC1A8
 ;4. Pins: Select which pin the PWM1 attaches to through the PINSEL registers. Attach PWM1 to P2[0] where our speaker is.  PINSEL4, that is, 0x4002 C010 should have its least significant bits set to 01.
- SETBITS #01,0X4002C010
- CLEARBITS #2_10,0X4002C010;NOT EFFICIENT
+ SETBITS #0101,0X4002C010
+ CLEARBITS #2_1010,0X4002C010;NOT EFFICIENT
 ;5. Select pin modes for port pins with PWM1 functions through the PINMODE registers (Section 8.5). PINMODE4, send Binary LSB 10 to 0x4002C050 so that the pin has neither a pull-up nor a pull-down resistor attached to it.
- WRITEBITS #2_10,0x4002C050
+ WRITEBITS #2_1010,0x4002C050
 ;Now to set up the Period, Pulse Width, and finally enable PWM output.
 ;6. Attach the system clock ->prescaler -> PWM -- write 0x00000000 to the CounT Control Register (0x4001 8070).
  WRITEBITS #0,0x40018070
@@ -93,66 +91,55 @@ INIT_PWM
  WRITEBITS #100,0X40018018
 ;9. Tell the PWM to turn off output when it reaches 50 by storing 50 in PWM1MatchRegister 1 (0x4001 801C)
  WRITEBITS #50,0X4001801C
+ WRITEBITS #50,0X40018020 ;And PWM1MatchRegister 2
 ;10. (B)Update the PWM timing with Match0 and Match1  by "latching" them in: load 11 to the LSB of (0x4001 8050)
- SETBITS #2_11,0X40018050
+ SETBITS #2_1111,0X40018050;And Match2 and Match3
 ;11. (C)Make Match0 reset the PWM (Match0 is period) by sending #2_00010 to MatchControlReg (0x4001 8014)
- WRITEBITS #2_00010,0x40018014
+ WRITEBITS #2_00010010,0x40018014;and Reset Match1 while you are at it
 ;12. Enable PWM1 to output using the PWM Control Register by sending 1 to the 9th bit of (0x4001 804C) (you can store 0x00200)
- SETBITS #0X200,0x4001804C
+ SETBITS #2_0000000011,0x4001804C
 ;13. Start the timer that feeds the PWM by removing the reset, enabling and starting: send a #9 to the TimerControlReg(0x4001 8004)
  WRITEBITS #2_1001,0x40018004
  BX LR
  
  
  
-Init_ADC
-	;enable adc in pconp
+INIT_ADC
+;enable adc in pconp
 	SETBITS #(1 << 12),0x400FC0C4
-	
-
 ;enable adc in the ad0cr register
 	WRITEBITS #(1 << 21),ADCcontrolregister
-	
-	
 ;set the peripheral clock
-
 	SETBITS #(2_11 << 24),0x400FC1A8
-	
-	
 ;set the pimode-PINSEL to adc (i think the problem was here. Actually, it is)
 	SETBITS #(2_101 << 14),0x4002C004
-	
-	
 ;No pullup no pull down
 
-	ldr r0,=0x4002C040
-	mov r1,#0x28000
-	str r1,[r0]
+	LDR R0,=0x4002C040
+	MOV R1,#0x28000
+	STR R1,[r0]
 	
-	bx lr
+	BX LR
 	
 Start_Converting_Y
 
 	SETBITS #1,ADCcontrolregister
 	CLEARBITS #(0XFE),ADCcontrolregister
 	
-;load in the  ADGR register 
-
-	ldr r0,=0x40034004
-	
-	;check if conversion is complete
-	
+;load in the  ADGR register
+	LDR R0,=0x40034004
+;check if conversion is complete
 Converting_Y
-	ldr r1,[r0]
-	tst r1,#(1 << 31)
-	beq Converting_Y
+	LDR R1,[R0]
+	TST R1,#(1 << 31)
+	BEQ Converting_Y
 	
 	
 	;return result
 	
-	MOV r7,R1
+	MOV R7,R1
 	
-	bx lr
+	BX LR
 	
 	
 	;r0` == 2_0011 0100
@@ -179,21 +166,18 @@ Start_Converting_X
 	
 ;load in the  ADGR register 
 
-	ldr r0,=0x40034004
+	LDR R0,=0x40034004
 	
 	;check if conversion is complete
 	
 Converting_X
-	ldr r1,[r0]
-	tst r1,#(1 << 31)
-	beq Converting_X
-	
+	LDR R1,[R0]
+	TST R1,#(1 << 31)
+	BEQ Converting_X
 	
 	;return result
-	
-	MOV r7,R1
-	
-	bx lr
+	MOV R7,R1
+	BX LR
 
 READ_BUTTONS
  LDR R9,=PIN0; LOAD R9 WITH THE ADDRESS OF THE BUTTON VALUES
@@ -201,9 +185,9 @@ READ_BUTTONS
  TST R3,#2_00000100; GIVES ME 100 IF BUTTON NOT PRESSED, 0 IF PRESSED
  LDR R10,=PIN2
  BEQ BUTTON_PRESSED; BUTTON PRESSED, TURN ON LIGHTS.
- MOV R5,#0;BUTTON ISN'T PREVIOUSLY PRESSED.
-; R5=0, BUTTON IS MOST RECENTLY NOT PRESSED. R5=1, BUTTON WAS MOST RECENTLY PRESSED 
- B READ_BUTTONS
+ ;MOV R5,#0;BUTTON ISN'T PREVIOUSLY PRESSED.
+ ;R5=0, BUTTON IS MOST RECENTLY NOT PRESSED. R5=1, BUTTON WAS MOST RECENTLY PRESSED 
+ ;B READ_BUTTONS
   
   
 BUTTON_PRESSED
@@ -214,7 +198,8 @@ BUTTON_PRESSED
  MOV R5,#1;BUTTON IS MOST RECENTLY PRESSED
  LDR R1,=0X4001800C
  STR R2,[R1]
- B READ_BUTTONS
+ BX LR
+ ;B READ_BUTTONS
 
 LOOPENDLESSLY
  B LOOPENDLESSLY
