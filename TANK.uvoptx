@@ -82,17 +82,17 @@
         <Book>
           <Number>0</Number>
           <Title>MCB1700 Schematics (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700-schematics.pdf</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700-schematics.pdf</Path>
         </Book>
         <Book>
           <Number>1</Number>
           <Title>User Manual (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700.chm</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700.chm</Path>
         </Book>
         <Book>
           <Number>2</Number>
           <Title>MCB1700 Quick Start Guide (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700_quickstart.pdf</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700_quickstart.pdf</Path>
         </Book>
         <Book>
           <Number>3</Number>
@@ -174,12 +174,13 @@
       </DebugFlag>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
+      <bLintAuto>0</bLintAuto>
     </TargetOption>
   </Target>
 
   <Group>
     <GroupName>Source Group 1</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

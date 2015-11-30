@@ -1,31 +1,90 @@
-;
-;	CS 100 Data File
-;	Due Date:
-;	Student Name:
-;	Section:
 
-;	TITLE "CS_100_Data"
-; © 2015 DigiPen, All Rights Reserved.
+Prescaler equ 0X4001800C
+Match0 equ 0X40018018
+Match1 equ 0X4001801C
+Match2 equ 0X40018020
+Pconp equ 0x400FC0C4
+Adcr0 equ 0x40034000
+Adgr equ 0x40034004
+Tcr equ 0x40018004
+PclkSel0 equ 0x400FC1A8
+CounterTimercr equ 0x40018070 ;selects either timer or counter
+LoadEnabler equ 0X40018050 ; enables pwm match registers
+Matchcr  equ 0x40018014
+PWMcr equ 0x4001804C
 
-; The values saved for VAL1_H, 1_L, 2_H, and 2_L can all be changed in this file only.
-; Do NOT attempt to change the names of VAL1_H, VAL2, etc.
-; In the end, your code should multiply the numbers listed below.
-; In the default example, you would be expected to multiply
-; 0x123456789ABCDEF0 x 0x0FEDCBA987654321 = ?
-
-VAL1_H EQU 0X12345678 ; The Higher 4 bytes of 0x123456789ABCDEF0
-VAL1_L EQU 0X9ABCDEF0 ; The Lower 4 bytes of 0x123456789ABCDEF0
-VAL2_H EQU 0X0FEDCBA9 ; The Higher 4 bytes of 0x0FEDCBA987654321
-VAL2_L EQU 0X87654321 ; The Lower 4 bytes of 0x0FEDCBA987654321
+	
+	
+;Pin select register
+PinSel0 equ 0x4002C000
+PinSel1  equ 0x4002C004
+PinSel2  equ 0x4002C008
+PinSel3  equ 0x4002C00C
+PinSel4  equ 0x4002C010
+PinSel7  equ 0x4002C01C
+PinSel8  equ 0x4002C020
+PinSel9  equ 0x4002C024
+PinSel10  equ 0x4002C028
 	
 	
 ;This acts like a DDR
-FIODR0 equ 0x2009C000
-FIODR1 equ 0x2009C020
-FIODR2 equ 0x2009C040
-FIODR3 equ 0x2009C060
-FIODR4 equ 0x2009C080
+DDR0 equ 0x2009C000
+DDR1 equ 0x2009C020
+DDR2 equ 0x2009C040
+DDR3 equ 0x2009C060
+DDR4 equ 0x2009C080
 	
+
+
+;This acts like PORT
+Port0 equ 0x2009C014	
+Port1 equ 0x2009C034
+Port2 equ 0x2009C054
+Port3 equ 0x2009C074
+Port4 equ 0x2009C094
+	
+	
+;This sets the built in pull up resistor
+PinMode0 equ   0x4002C040
+PinMode1 equ   0x4002C044
+PinMode2 equ   0x4002C048
+PinMode3 equ   0x4002C04C
+PinMode4 equ   0x4002C050
+PinMode5 equ   0x4002C054
+PinMode6 equ   0x4002C058
+PinMode7 equ   0x4002C05C
+PinMode8 equ   0x4002C060
+PinMode9 equ   0x4002C064
+		
+
+
+
+ MACRO
+ WRITEBITS $BITS_TO_WRITE,$REGISTER_ADDY
+ MOV R1,$BITS_TO_WRITE
+ LDR R0,=$REGISTER_ADDY
+ STR R1,[R0]
+ MEND
+
+ MACRO
+ SETBITS $BITS_TO_SET,$REG_ADDY
+ LDR R0,=$REG_ADDY
+ LDR R1,[R0]
+ ORR R1,R1,$BITS_TO_SET
+ STR R1,[R0]
+ MEND
+
+ MACRO;ME SMASHY R0,R1.
+ CLEARBITS $BITS_TO_CLEAR,$REG_ADDY
+ LDR R0,=$REG_ADDY
+ LDR R1,[R0]
+ BIC R1,R1,$BITS_TO_CLEAR
+ STR R1,[R0]
+ MEND	
+ 
+ 
+ 
+ ;Not used
 FIOSET0 equ 0x2009C018
 FIOSET1 equ 0x2009C038
 FIOSET2 equ 0x2009C058
@@ -36,35 +95,8 @@ FIOCLR0 equ 0x2009C01C
 FIOCLR1 equ 0x2009C03C
 FIOCLR2 equ 0x2009C05C
 FIOCLR3 equ 0x2009C07C
-FIOCLR4 equ 0x2009C09C
+FIOCLR4 equ 0x2009C09C	
 
-;This acts like PORT
-PIN0 equ 0x2009C014	
-PIN1 equ 0x2009C034
-PIN2 equ 0x2009C054
-PIN3 equ 0x2009C074
-PIN4 equ 0x2009C094
-	
-	
-;This sets the built in pull up resistor
-PINMODE0 equ   0x4002C040
-PINMODE1 equ   0x4002C044
-PINMODE2 equ   0x4002C048
-PINMODE3 equ   0x4002C04C
-PINMODE4 equ   0x4002C050
-PINMODE5 equ   0x4002C054
-PINMODE6 equ   0x4002C058
-PINMODE7 equ   0x4002C05C
-PINMODE8 equ   0x4002C060
-PINMODE9 equ   0x4002C064
-		
-
-	
-	
-
-	
-
-	AREA DATAAREA, DATA ; HEY, ASSEMBLER: GIMME 16 bytes SPACE IN DATA MEMORY
-RESULT SPACE 16; IN FACT, I WANT 16BYTES IN DATA MEMORY. LET'S LABEL IT 'RESULT'.
+	;AREA DATAAREA, DATA ; HEY, ASSEMBLER: GIMME 16 bytes SPACE IN DATA MEMORY
 
 	END

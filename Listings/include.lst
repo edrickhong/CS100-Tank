@@ -4,250 +4,268 @@
 ARM Macro Assembler    Page 1 
 
 
-    1 00000000         ;
-    2 00000000         ; CS 100 Data File
-    3 00000000         ; Due Date:
-    4 00000000         ; Student Name:
-    5 00000000         ; Section:
-    6 00000000         
-    7 00000000         ; TITLE "CS_100_Data"
-    8 00000000         ; © 2015 DigiPen, All Rights Reserved.
-    9 00000000         
-   10 00000000         ; The values saved for VAL1_H, 1_L, 2_H, and 2_L can all
-                        be changed in this file only.
-   11 00000000         ; Do NOT attempt to change the names of VAL1_H, VAL2, et
-                       c.
-   12 00000000         ; In the end, your code should multiply the numbers list
-                       ed below.
-   13 00000000         ; In the default example, you would be expected to multi
-                       ply
-   14 00000000         ; 0x123456789ABCDEF0 x 0x0FEDCBA987654321 = ?
+    1 00000000         
+    2 00000000 4001800C 
+                       Prescaler
+                               equ              0X4001800C
+    3 00000000 40018018 
+                       Match0  equ              0X40018018
+    4 00000000 4001801C 
+                       Match1  equ              0X4001801C
+    5 00000000 40018020 
+                       Match2  equ              0X40018020
+    6 00000000 400FC0C4 
+                       Pconp   equ              0x400FC0C4
+    7 00000000 40034000 
+                       Adcr0   equ              0x40034000
+    8 00000000 40034004 
+                       Adgr    equ              0x40034004
+    9 00000000 40018004 
+                       Tcr     equ              0x40018004
+   10 00000000 400FC1A8 
+                       PclkSel0
+                               equ              0x400FC1A8
+   11 00000000 40018070 
+                       CounterTimercr
+                               equ              0x40018070  ;selects either tim
+                                                            er or counter
+   12 00000000 40018050 
+                       LoadEnabler
+                               equ              0X40018050  ; enables pwm match
+                                                             registers
+   13 00000000 40018014 
+                       Matchcr equ              0x40018014
+   14 00000000 4001804C 
+                       PWMcr   equ              0x4001804C
    15 00000000         
-   16 00000000 12345678 
-                       VAL1_H  EQU              0X12345678  ; The Higher 4 byte
-                                                            s of 0x123456789ABC
-                                                            DEF0
-   17 00000000 9ABCDEF0 
-                       VAL1_L  EQU              0X9ABCDEF0  ; The Lower 4 bytes
-                                                             of 0x123456789ABCD
-                                                            EF0
-   18 00000000 0FEDCBA9 
-                       VAL2_H  EQU              0X0FEDCBA9  ; The Higher 4 byte
-                                                            s of 0x0FEDCBA98765
-                                                            4321
-   19 00000000 87654321 
-                       VAL2_L  EQU              0X87654321  ; The Lower 4 bytes
-                                                             of 0x0FEDCBA987654
-                                                            321
-   20 00000000         
-   21 00000000         
-   22 00000000         ;This acts like a DDR
-   23 00000000 2009C000 
-                       FIODR0  equ              0x2009C000
-   24 00000000 2009C020 
-                       FIODR1  equ              0x2009C020
-   25 00000000 2009C040 
-                       FIODR2  equ              0x2009C040
-   26 00000000 2009C060 
-                       FIODR3  equ              0x2009C060
-   27 00000000 2009C080 
-                       FIODR4  equ              0x2009C080
+   16 00000000         
+   17 00000000         
+   18 00000000         ;Pin select register
+   19 00000000 4002C000 
+                       PinSel0 equ              0x4002C000
+   20 00000000 4002C004 
+                       PinSel1 equ              0x4002C004
+   21 00000000 4002C008 
+                       PinSel2 equ              0x4002C008
+   22 00000000 4002C00C 
+                       PinSel3 equ              0x4002C00C
+   23 00000000 4002C010 
+                       PinSel4 equ              0x4002C010
+   24 00000000 4002C01C 
+                       PinSel7 equ              0x4002C01C
+   25 00000000 4002C020 
+                       PinSel8 equ              0x4002C020
+   26 00000000 4002C024 
+                       PinSel9 equ              0x4002C024
+   27 00000000 4002C028 
+                       PinSel10
+                               equ              0x4002C028
    28 00000000         
-   29 00000000 2009C018 
-                       FIOSET0 equ              0x2009C018
-   30 00000000 2009C038 
-                       FIOSET1 equ              0x2009C038
-   31 00000000 2009C058 
-                       FIOSET2 equ              0x2009C058
-   32 00000000 2009C078 
-                       FIOSET3 equ              0x2009C078
-   33 00000000 2009C098 
-                       FIOSET4 equ              0x2009C098
+   29 00000000         
+   30 00000000         ;This acts like a DDR
 
 
 
 ARM Macro Assembler    Page 2 
 
 
-   34 00000000         
-   35 00000000 2009C01C 
-                       FIOCLR0 equ              0x2009C01C
-   36 00000000 2009C03C 
-                       FIOCLR1 equ              0x2009C03C
-   37 00000000 2009C05C 
-                       FIOCLR2 equ              0x2009C05C
-   38 00000000 2009C07C 
-                       FIOCLR3 equ              0x2009C07C
-   39 00000000 2009C09C 
-                       FIOCLR4 equ              0x2009C09C
-   40 00000000         
-   41 00000000         ;This acts like PORT
-   42 00000000 2009C014 
-                       PIN0    equ              0x2009C014
-   43 00000000 2009C034 
-                       PIN1    equ              0x2009C034
-   44 00000000 2009C054 
-                       PIN2    equ              0x2009C054
-   45 00000000 2009C074 
-                       PIN3    equ              0x2009C074
-   46 00000000 2009C094 
-                       PIN4    equ              0x2009C094
-   47 00000000         
-   48 00000000         
-   49 00000000         ;This sets the built in pull up resistor
-   50 00000000 4002C040 
-                       PINMODE0
+   31 00000000 2009C000 
+                       DDR0    equ              0x2009C000
+   32 00000000 2009C020 
+                       DDR1    equ              0x2009C020
+   33 00000000 2009C040 
+                       DDR2    equ              0x2009C040
+   34 00000000 2009C060 
+                       DDR3    equ              0x2009C060
+   35 00000000 2009C080 
+                       DDR4    equ              0x2009C080
+   36 00000000         
+   37 00000000         
+   38 00000000         
+   39 00000000         ;This acts like PORT
+   40 00000000 2009C014 
+                       Port0   equ              0x2009C014
+   41 00000000 2009C034 
+                       Port1   equ              0x2009C034
+   42 00000000 2009C054 
+                       Port2   equ              0x2009C054
+   43 00000000 2009C074 
+                       Port3   equ              0x2009C074
+   44 00000000 2009C094 
+                       Port4   equ              0x2009C094
+   45 00000000         
+   46 00000000         
+   47 00000000         ;This sets the built in pull up resistor
+   48 00000000 4002C040 
+                       PinMode0
                                equ              0x4002C040
-   51 00000000 4002C044 
-                       PINMODE1
+   49 00000000 4002C044 
+                       PinMode1
                                equ              0x4002C044
-   52 00000000 4002C048 
-                       PINMODE2
+   50 00000000 4002C048 
+                       PinMode2
                                equ              0x4002C048
-   53 00000000 4002C04C 
-                       PINMODE3
+   51 00000000 4002C04C 
+                       PinMode3
                                equ              0x4002C04C
-   54 00000000 4002C050 
-                       PINMODE4
+   52 00000000 4002C050 
+                       PinMode4
                                equ              0x4002C050
-   55 00000000 4002C054 
-                       PINMODE5
+   53 00000000 4002C054 
+                       PinMode5
                                equ              0x4002C054
-   56 00000000 4002C058 
-                       PINMODE6
+   54 00000000 4002C058 
+                       PinMode6
                                equ              0x4002C058
-   57 00000000 4002C05C 
-                       PINMODE7
+   55 00000000 4002C05C 
+                       PinMode7
                                equ              0x4002C05C
-   58 00000000 4002C060 
-                       PINMODE8
+   56 00000000 4002C060 
+                       PinMode8
                                equ              0x4002C060
-   59 00000000 4002C064 
-                       PINMODE9
+   57 00000000 4002C064 
+                       PinMode9
                                equ              0x4002C064
-   60 00000000         
-   61 00000000         
-   62 00000000         
+   58 00000000         
+   59 00000000         
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   63 00000000         
-   64 00000000         
-   65 00000000         
-   66 00000000         
-   67 00000000                 AREA             DATAAREA, DATA ; HEY, ASSEMBLER
-                                                            : GIMME 16 bytes SP
-                                                            ACE IN DATA MEMORY
-   68 00000000 00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00 00 00 
-              00       RESULT  SPACE            16          ; IN FACT, I WANT 1
-                                                            6BYTES IN DATA MEMO
-                                                            RY. LET'S LABEL IT 
-                                                            'RESULT'.
-   69 00000010         
-   70 00000010                 END
-Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\object
-s\include.d -o.\objects\include.o -I"C:\Users\c.terence\Desktop\CS100 Tank\RTE"
- -I"C:\Users\c.terence\Desktop\CS100 Tank\RTE\Device\LPC1769" -I"C:\Program Fil
-es (x86)\Keil_uvision5\ARM\PACK\ARM\CMSIS\4.4.0\CMSIS\Include" -I"C:\Program Fi
-les (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Device\Include" --prede
-fine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 513" --predefine="_RTE
-_ SETA 1" --predefine="LPC175x_6x SETA 1" --list=.\listings\include.lst include
-.s
+   60 00000000         
+   61 00000000         
+   62 00000000                 MACRO
+   63 00000000                 WRITEBITS        $BITS_TO_WRITE,$REGISTER_ADDY
+   64 00000000                 MOV              R1,$BITS_TO_WRITE
+   65 00000000                 LDR              R0,=$REGISTER_ADDY
+   66 00000000                 STR              R1,[R0]
+   67 00000000                 MEND
+   68 00000000         
+   69 00000000                 MACRO
+   70 00000000                 SETBITS          $BITS_TO_SET,$REG_ADDY
+   71 00000000                 LDR              R0,=$REG_ADDY
+   72 00000000                 LDR              R1,[R0]
+   73 00000000                 ORR              R1,R1,$BITS_TO_SET
+   74 00000000                 STR              R1,[R0]
+   75 00000000                 MEND
+   76 00000000         
+   77 00000000                 MACRO                        ;ME SMASHY R0,R1.
+   78 00000000                 CLEARBITS        $BITS_TO_CLEAR,$REG_ADDY
+   79 00000000                 LDR              R0,=$REG_ADDY
+   80 00000000                 LDR              R1,[R0]
+   81 00000000                 BIC              R1,R1,$BITS_TO_CLEAR
+   82 00000000                 STR              R1,[R0]
+   83 00000000                 MEND
+   84 00000000         
+   85 00000000         
+   86 00000000         
+   87 00000000         ;Not used
+   88 00000000 2009C018 
+                       FIOSET0 equ              0x2009C018
+   89 00000000 2009C038 
+                       FIOSET1 equ              0x2009C038
+   90 00000000 2009C058 
+                       FIOSET2 equ              0x2009C058
+   91 00000000 2009C078 
+                       FIOSET3 equ              0x2009C078
+   92 00000000 2009C098 
+                       FIOSET4 equ              0x2009C098
+   93 00000000         
+   94 00000000 2009C01C 
+                       FIOCLR0 equ              0x2009C01C
+   95 00000000 2009C03C 
+                       FIOCLR1 equ              0x2009C03C
+   96 00000000 2009C05C 
+                       FIOCLR2 equ              0x2009C05C
+   97 00000000 2009C07C 
+                       FIOCLR3 equ              0x2009C07C
+   98 00000000 2009C09C 
+                       FIOCLR4 equ              0x2009C09C
+   99 00000000         
+  100 00000000         ;AREA DATAAREA, DATA ; HEY, ASSEMBLER: GIMME 16 bytes SP
+                       ACE IN DATA MEMORY
+  101 00000000         
+  102 00000000                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=.\objects\include.d -o.\objects\include.o -IC:\Users\cwkte_000\Doc
+uments\cs100-tank\RTE -IC:\Users\cwkte_000\Documents\cs100-tank\RTE\Device\LPC1
+769 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.4.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\K
+eil\LPC1700_DFP\2.1.0\Device\Include --predefine="__EVAL SETA 1" --predefine="_
 
 
 
-ARM Macro Assembler    Page 1 Alphabetic symbol ordering
-Relocatable symbols
+ARM Macro Assembler    Page 4 
 
-DATAAREA 00000000
 
-Symbol: DATAAREA
-   Definitions
-      At line 67 in file include.s
-   Uses
-      None
-Comment: DATAAREA unused
-RESULT 00000000
-
-Symbol: RESULT
-   Definitions
-      At line 68 in file include.s
-   Uses
-      None
-Comment: RESULT unused
-2 symbols
+_UVISION_VERSION SETA 516" --predefine="_RTE_ SETA 1" --predefine="LPC175x_6x S
+ETA 1" --list=.\listings\include.lst include.s
 
 
 
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-FIOCLR0 2009C01C
+Adcr0 40034000
 
-Symbol: FIOCLR0
+Symbol: Adcr0
    Definitions
-      At line 35 in file include.s
+      At line 7 in file include.s
    Uses
       None
-Comment: FIOCLR0 unused
-FIOCLR1 2009C03C
+Comment: Adcr0 unused
+Adgr 40034004
 
-Symbol: FIOCLR1
+Symbol: Adgr
    Definitions
-      At line 36 in file include.s
+      At line 8 in file include.s
    Uses
       None
-Comment: FIOCLR1 unused
-FIOCLR2 2009C05C
+Comment: Adgr unused
+CounterTimercr 40018070
 
-Symbol: FIOCLR2
+Symbol: CounterTimercr
    Definitions
-      At line 37 in file include.s
+      At line 11 in file include.s
    Uses
       None
-Comment: FIOCLR2 unused
-FIOCLR3 2009C07C
+Comment: CounterTimercr unused
+DDR0 2009C000
 
-Symbol: FIOCLR3
+Symbol: DDR0
    Definitions
-      At line 38 in file include.s
+      At line 31 in file include.s
    Uses
       None
-Comment: FIOCLR3 unused
-FIOCLR4 2009C09C
+Comment: DDR0 unused
+DDR1 2009C020
 
-Symbol: FIOCLR4
+Symbol: DDR1
    Definitions
-      At line 39 in file include.s
+      At line 32 in file include.s
    Uses
       None
-Comment: FIOCLR4 unused
-FIODR0 2009C000
+Comment: DDR1 unused
+DDR2 2009C040
 
-Symbol: FIODR0
+Symbol: DDR2
    Definitions
-      At line 23 in file include.s
+      At line 33 in file include.s
    Uses
       None
-Comment: FIODR0 unused
-FIODR1 2009C020
+Comment: DDR2 unused
+DDR3 2009C060
 
-Symbol: FIODR1
+Symbol: DDR3
    Definitions
-      At line 24 in file include.s
+      At line 34 in file include.s
    Uses
       None
-Comment: FIODR1 unused
-FIODR2 2009C040
+Comment: DDR3 unused
+DDR4 2009C080
 
-Symbol: FIODR2
+Symbol: DDR4
 
 
 
@@ -255,31 +273,55 @@ ARM Macro Assembler    Page 2 Alphabetic symbol ordering
 Absolute symbols
 
    Definitions
-      At line 25 in file include.s
+      At line 35 in file include.s
    Uses
       None
-Comment: FIODR2 unused
-FIODR3 2009C060
+Comment: DDR4 unused
+FIOCLR0 2009C01C
 
-Symbol: FIODR3
+Symbol: FIOCLR0
    Definitions
-      At line 26 in file include.s
+      At line 94 in file include.s
    Uses
       None
-Comment: FIODR3 unused
-FIODR4 2009C080
+Comment: FIOCLR0 unused
+FIOCLR1 2009C03C
 
-Symbol: FIODR4
+Symbol: FIOCLR1
    Definitions
-      At line 27 in file include.s
+      At line 95 in file include.s
    Uses
       None
-Comment: FIODR4 unused
+Comment: FIOCLR1 unused
+FIOCLR2 2009C05C
+
+Symbol: FIOCLR2
+   Definitions
+      At line 96 in file include.s
+   Uses
+      None
+Comment: FIOCLR2 unused
+FIOCLR3 2009C07C
+
+Symbol: FIOCLR3
+   Definitions
+      At line 97 in file include.s
+   Uses
+      None
+Comment: FIOCLR3 unused
+FIOCLR4 2009C09C
+
+Symbol: FIOCLR4
+   Definitions
+      At line 98 in file include.s
+   Uses
+      None
+Comment: FIOCLR4 unused
 FIOSET0 2009C018
 
 Symbol: FIOSET0
    Definitions
-      At line 29 in file include.s
+      At line 88 in file include.s
    Uses
       None
 Comment: FIOSET0 unused
@@ -287,31 +329,7 @@ FIOSET1 2009C038
 
 Symbol: FIOSET1
    Definitions
-      At line 30 in file include.s
-   Uses
-      None
-Comment: FIOSET1 unused
-FIOSET2 2009C058
-
-Symbol: FIOSET2
-   Definitions
-      At line 31 in file include.s
-   Uses
-      None
-Comment: FIOSET2 unused
-FIOSET3 2009C078
-
-Symbol: FIOSET3
-   Definitions
-      At line 32 in file include.s
-   Uses
-      None
-Comment: FIOSET3 unused
-FIOSET4 2009C098
-
-Symbol: FIOSET4
-   Definitions
-      At line 33 in file include.s
+      At line 89 in file include.s
    Uses
 
 
@@ -320,64 +338,64 @@ ARM Macro Assembler    Page 3 Alphabetic symbol ordering
 Absolute symbols
 
       None
+Comment: FIOSET1 unused
+FIOSET2 2009C058
+
+Symbol: FIOSET2
+   Definitions
+      At line 90 in file include.s
+   Uses
+      None
+Comment: FIOSET2 unused
+FIOSET3 2009C078
+
+Symbol: FIOSET3
+   Definitions
+      At line 91 in file include.s
+   Uses
+      None
+Comment: FIOSET3 unused
+FIOSET4 2009C098
+
+Symbol: FIOSET4
+   Definitions
+      At line 92 in file include.s
+   Uses
+      None
 Comment: FIOSET4 unused
-PIN0 2009C014
+LoadEnabler 40018050
 
-Symbol: PIN0
+Symbol: LoadEnabler
    Definitions
-      At line 42 in file include.s
+      At line 12 in file include.s
    Uses
       None
-Comment: PIN0 unused
-PIN1 2009C034
+Comment: LoadEnabler unused
+Match0 40018018
 
-Symbol: PIN1
+Symbol: Match0
    Definitions
-      At line 43 in file include.s
+      At line 3 in file include.s
    Uses
       None
-Comment: PIN1 unused
-PIN2 2009C054
+Comment: Match0 unused
+Match1 4001801C
 
-Symbol: PIN2
+Symbol: Match1
    Definitions
-      At line 44 in file include.s
+      At line 4 in file include.s
    Uses
       None
-Comment: PIN2 unused
-PIN3 2009C074
+Comment: Match1 unused
+Match2 40018020
 
-Symbol: PIN3
+Symbol: Match2
    Definitions
-      At line 45 in file include.s
+      At line 5 in file include.s
    Uses
       None
-Comment: PIN3 unused
-PIN4 2009C094
-
-Symbol: PIN4
-   Definitions
-      At line 46 in file include.s
-   Uses
-      None
-Comment: PIN4 unused
-PINMODE0 4002C040
-
-Symbol: PINMODE0
-   Definitions
-      At line 50 in file include.s
-   Uses
-      None
-Comment: PINMODE0 unused
-PINMODE1 4002C044
-
-Symbol: PINMODE1
-   Definitions
-      At line 51 in file include.s
-   Uses
-      None
-Comment: PINMODE1 unused
-PINMODE2 4002C048
+Comment: Match2 unused
+Matchcr 40018014
 
 
 
@@ -385,63 +403,63 @@ ARM Macro Assembler    Page 4 Alphabetic symbol ordering
 Absolute symbols
 
 
-Symbol: PINMODE2
+Symbol: Matchcr
    Definitions
-      At line 52 in file include.s
+      At line 13 in file include.s
    Uses
       None
-Comment: PINMODE2 unused
-PINMODE3 4002C04C
+Comment: Matchcr unused
+PWMcr 4001804C
 
-Symbol: PINMODE3
+Symbol: PWMcr
    Definitions
-      At line 53 in file include.s
+      At line 14 in file include.s
    Uses
       None
-Comment: PINMODE3 unused
-PINMODE4 4002C050
+Comment: PWMcr unused
+PclkSel0 400FC1A8
 
-Symbol: PINMODE4
+Symbol: PclkSel0
    Definitions
-      At line 54 in file include.s
+      At line 10 in file include.s
    Uses
       None
-Comment: PINMODE4 unused
-PINMODE5 4002C054
+Comment: PclkSel0 unused
+Pconp 400FC0C4
 
-Symbol: PINMODE5
+Symbol: Pconp
    Definitions
-      At line 55 in file include.s
+      At line 6 in file include.s
    Uses
       None
-Comment: PINMODE5 unused
-PINMODE6 4002C058
+Comment: Pconp unused
+PinMode0 4002C040
 
-Symbol: PINMODE6
+Symbol: PinMode0
    Definitions
-      At line 56 in file include.s
+      At line 48 in file include.s
    Uses
       None
-Comment: PINMODE6 unused
-PINMODE7 4002C05C
+Comment: PinMode0 unused
+PinMode1 4002C044
 
-Symbol: PINMODE7
+Symbol: PinMode1
    Definitions
-      At line 57 in file include.s
+      At line 49 in file include.s
    Uses
       None
-Comment: PINMODE7 unused
-PINMODE8 4002C060
+Comment: PinMode1 unused
+PinMode2 4002C048
 
-Symbol: PINMODE8
+Symbol: PinMode2
    Definitions
-      At line 58 in file include.s
+      At line 50 in file include.s
    Uses
       None
-Comment: PINMODE8 unused
-PINMODE9 4002C064
+Comment: PinMode2 unused
+PinMode3 4002C04C
 
-Symbol: PINMODE9
+Symbol: PinMode3
    Definitions
 
 
@@ -449,41 +467,203 @@ Symbol: PINMODE9
 ARM Macro Assembler    Page 5 Alphabetic symbol ordering
 Absolute symbols
 
-      At line 59 in file include.s
+      At line 51 in file include.s
    Uses
       None
-Comment: PINMODE9 unused
-VAL1_H 12345678
+Comment: PinMode3 unused
+PinMode4 4002C050
 
-Symbol: VAL1_H
+Symbol: PinMode4
    Definitions
-      At line 16 in file include.s
+      At line 52 in file include.s
    Uses
       None
-Comment: VAL1_H unused
-VAL1_L 9ABCDEF0
+Comment: PinMode4 unused
+PinMode5 4002C054
 
-Symbol: VAL1_L
+Symbol: PinMode5
    Definitions
-      At line 17 in file include.s
+      At line 53 in file include.s
    Uses
       None
-Comment: VAL1_L unused
-VAL2_H 0FEDCBA9
+Comment: PinMode5 unused
+PinMode6 4002C058
 
-Symbol: VAL2_H
+Symbol: PinMode6
    Definitions
-      At line 18 in file include.s
+      At line 54 in file include.s
    Uses
       None
-Comment: VAL2_H unused
-VAL2_L 87654321
+Comment: PinMode6 unused
+PinMode7 4002C05C
 
-Symbol: VAL2_L
+Symbol: PinMode7
+   Definitions
+      At line 55 in file include.s
+   Uses
+      None
+Comment: PinMode7 unused
+PinMode8 4002C060
+
+Symbol: PinMode8
+   Definitions
+      At line 56 in file include.s
+   Uses
+      None
+Comment: PinMode8 unused
+PinMode9 4002C064
+
+Symbol: PinMode9
+   Definitions
+      At line 57 in file include.s
+   Uses
+      None
+Comment: PinMode9 unused
+PinSel0 4002C000
+
+Symbol: PinSel0
    Definitions
       At line 19 in file include.s
    Uses
       None
-Comment: VAL2_L unused
-34 symbols
-370 symbols in table
+
+
+
+ARM Macro Assembler    Page 6 Alphabetic symbol ordering
+Absolute symbols
+
+Comment: PinSel0 unused
+PinSel1 4002C004
+
+Symbol: PinSel1
+   Definitions
+      At line 20 in file include.s
+   Uses
+      None
+Comment: PinSel1 unused
+PinSel10 4002C028
+
+Symbol: PinSel10
+   Definitions
+      At line 27 in file include.s
+   Uses
+      None
+Comment: PinSel10 unused
+PinSel2 4002C008
+
+Symbol: PinSel2
+   Definitions
+      At line 21 in file include.s
+   Uses
+      None
+Comment: PinSel2 unused
+PinSel3 4002C00C
+
+Symbol: PinSel3
+   Definitions
+      At line 22 in file include.s
+   Uses
+      None
+Comment: PinSel3 unused
+PinSel4 4002C010
+
+Symbol: PinSel4
+   Definitions
+      At line 23 in file include.s
+   Uses
+      None
+Comment: PinSel4 unused
+PinSel7 4002C01C
+
+Symbol: PinSel7
+   Definitions
+      At line 24 in file include.s
+   Uses
+      None
+Comment: PinSel7 unused
+PinSel8 4002C020
+
+Symbol: PinSel8
+   Definitions
+      At line 25 in file include.s
+   Uses
+      None
+Comment: PinSel8 unused
+PinSel9 4002C024
+
+
+
+
+ARM Macro Assembler    Page 7 Alphabetic symbol ordering
+Absolute symbols
+
+Symbol: PinSel9
+   Definitions
+      At line 26 in file include.s
+   Uses
+      None
+Comment: PinSel9 unused
+Port0 2009C014
+
+Symbol: Port0
+   Definitions
+      At line 40 in file include.s
+   Uses
+      None
+Comment: Port0 unused
+Port1 2009C034
+
+Symbol: Port1
+   Definitions
+      At line 41 in file include.s
+   Uses
+      None
+Comment: Port1 unused
+Port2 2009C054
+
+Symbol: Port2
+   Definitions
+      At line 42 in file include.s
+   Uses
+      None
+Comment: Port2 unused
+Port3 2009C074
+
+Symbol: Port3
+   Definitions
+      At line 43 in file include.s
+   Uses
+      None
+Comment: Port3 unused
+Port4 2009C094
+
+Symbol: Port4
+   Definitions
+      At line 44 in file include.s
+   Uses
+      None
+Comment: Port4 unused
+Prescaler 4001800C
+
+Symbol: Prescaler
+   Definitions
+      At line 2 in file include.s
+   Uses
+      None
+Comment: Prescaler unused
+Tcr 40018004
+
+Symbol: Tcr
+   Definitions
+      At line 9 in file include.s
+
+
+
+ARM Macro Assembler    Page 8 Alphabetic symbol ordering
+Absolute symbols
+
+   Uses
+      None
+Comment: Tcr unused
+52 symbols
+386 symbols in table
