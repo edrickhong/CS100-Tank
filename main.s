@@ -1,9 +1,8 @@
 
 	INCLUDE include.s
 		
-		;FIXME: Don't BL more than once	
-		
-BaseSpeed equ 50 ;we will use 50 for now cos why not
+BaseSpeed equ 30 ;we will use 50 for now cos why not
+TurnSpeed equ 50
 Factor equ 1
 Range equ 1
 
@@ -26,13 +25,12 @@ __main
 	
 	mov r9,#0 ; we will store the angle bias into r9. This is a signed number
 	
-
-	bl INIT_PWM
 	
-	bl Forward
- 
-
+	
+	
+	bl INIT_PWM
 	bl INIT_ADC
+
  
  
  
@@ -49,14 +47,19 @@ Handle_Input
 	
 
 
-;TODO: The macro use here makes the code sub optimal
-	
+
+
 Read_Sensor  ;r1 r2 r3
 
 	SETBITS #1,Adcr0  ;read pin 0
-	CLEARBITS #(0XFE),Adcr0
+	CLEARBITS #(2_11111110),Adcr0
+
+	SETBITS #(1 << 24),Adcr0 ; START
+	CLEARBITS #(2_11 << 25),Adcr0
+
 	
 ;load in the  ADGR register
+
 	LDR R0,=Adgr  
 	
 
@@ -66,28 +69,18 @@ Converting_Y   ;Front
 	TST R1,#(1 << 31)
 	BEQ Converting_Y
 	
-	;r0` == 2_0011 0100
-	;tst == 2_0000 1000
-	;&-----------------
-	;       2_0000 0000 ==> Z == 1
+	
+	
+	push {r1}
 
-	;r0` == 2_0011 1100
-	;tst == 2_0000 1000
-	;&-----------------
-	;       2_0000 1000 ==> Z == 0
-	
-	
-	;0 0 0 0 1 0 0 1 0
-	;0 1 1 1 1 1 1 1 1
-	
-	;0 0 0 0 0 0 0 0
-	;1 0 0 0 0 0 0 0
 	
 Start_Converting_X  ;Left
 
-	SETBITS #2,Adcr0 ;read pin 1
-	CLEARBITS #(0XFD),Adcr0
-	
+	SETBITS #2,Adcr0  ;read pin 0
+	CLEARBITS #(2_11111101),Adcr0
+
+	SETBITS #(1 << 24),Adcr0 ; START
+	CLEARBITS #(2_11 << 25),Adcr0
 ;load in the  ADGR register 
 
 	LDR R0,=Adgr
@@ -95,25 +88,30 @@ Start_Converting_X  ;Left
 	;check if conversion is complete
 	
 Converting_X
-	LDR R2,[R0]
-	TST R2,#(1 << 31)
+	LDR R1,[R0]
+	TST R1,#(1 << 31)
 	BEQ Converting_X
 	
-	
+	push {r1}
 	
 Start_Converting_Z
 
-	SETBITS #4,Adcr0
-	CLEARBITS #(0XFB),Adcr0
+	SETBITS #4,Adcr0  ;read pin 0
+	CLEARBITS #(2_11111011),Adcr0
 
+	SETBITS #(1 << 24),Adcr0 ; START
+	CLEARBITS #(2_11 << 25),Adcr0
+	
+	
+	LDR R0,=Adgr
 
-Converting_Z  ;Right
+Converting_Z  ;FIXME:Right  We cannot seem to read from here
 
-	LDR R3,[R0]
-	TST R3,#(1 << 31)
+	LDR R1,[R0]
+	TST R1,#(1 << 31)
 	BEQ Converting_Z
 	
-	
+	push {r1}
 	
 	;format the results r1 r2 r3
 	
@@ -122,24 +120,105 @@ Converting_Z  ;Right
 	;shift the result right by 4
 	;clear all other bits
 	
+	pop {r3}
+	pop {r2}
+	pop {r1}
+	
+	ldr r4,=0xFFFFF000
 	
 	ASR r1,#4
-	BIC r1,#0xFFFFFFF0   ;#2_1111 1111 1111 1111 1111 1111 1111 0000
+	BIC r1,r4   ;#2_1111 1111 1111 1111 1111 0000 0000 0000
 	
 	ASR r2,#4
-	BIC r2,#0xFFFFFFF0   
+	BIC r2,r4
 	
 	ASR r3,#4
-	BIC r3,#0xFFFFFFF0   
+	BIC r3,r4
+
+
+	nop
+	
 	
 	
 	bx lr
 	
 	
-Forward 
+
+	
+	
+Process 
+
+;r1 r2 and r3 are reserved  (Fs Ls Rs)
+
+	push {lr}
+	
+	
+;---------------Debug Sensors Start------------------
+
+
+	sub r4,r2,r3  ; L - R
+	
+	
+	cmp r4,#0
+	bpl Correct_Right
+	
+;case r4 < 0, turn left
+Go_Left
+
+	bl Left
+	
+	b Process_Exit
+	
+	
+Correct_Right ;course correct or go right
+
+	mov r5,#1900
+	cmp r4,r5
+	bpl Go_Right
+
+; r4 < r5
+
+;Course Correction
+
+	cmp r1,#Range
+	bpl Go_Right  ; if front is in range (go right by default. set a flag to turn left or right)
+
+;else correct course
+	cmp r9,#0
+	bpl Right_Forward
+	
+	b Go_Left ; r9 <0
+	
+Right_Forward
+	cbnz Go_Right 
+	
+	bl Forward ;r9 = 0
+	
+	b Process_Exit
+	
+Go_Right
+
+
+; r4 >=r5
+
+	bl Right
+
+;---------------Debug Sensors End------------------
+
+Process_Exit
+	
+	pop {lr};restore return address
+	
+	
+	SETBITS #2_111,LoadEnabler ; latch the results
+
+	bx lr
+	
+	
+Forward
 
 	ldr r0,=Port0
-	mov r1,#2_0110
+	mov r1,#2_1010;#2_0101
 	str r1,[r0]
 	
 	
@@ -150,101 +229,53 @@ Forward
 	 
 	ldr r0,=Match2
 	str r1,[r0]
+	
+	bx lr
+
+Left
+
+	ldr r0,=Port0
+	mov r1,#2_1010;#2_0101
+	str r1,[r0]
+	
+	
+	;reset to the base speed
+	ldr r0,= Match1
+	mov r1, #BaseSpeed
+	str r1,[r0]
 	 
-	 
+	ldr r0,=Match2
+	add r1, #TurnSpeed
+	str r1,[r0]
+	
+	sub r9,#1
+	
 	bx lr
 
 Right
+
+	ldr r0,=Port0
+	mov r1,#2_1010;#2_0101
+	str r1,[r0]
+	
+	
+	;reset to the base speed
+	ldr r0,= Match1
+	mov r1, #TurnSpeed
+	str r1,[r0]
+	 
+	ldr r0,=Match2
+	mov r1, #BaseSpeed
+	str r1,[r0]
+	
+	add r9,#1
+	
 	bx lr
-Left
-	bx lr
-	
-	
-Process  ;WheelSpeedR = basespeed * ( SensorR/SensorL) * constant k
-
-	push {lr} ; preserved the return address
-
-
-;r1 r2 and r3 are reserved  (Fs Ls Rs)
 
 
 
 
-;TODO: This is a mess of branches. Make sure this works. Test the Avoidance first. If that works, test the Correction
 
-
-
-;we will do a range check if we feel like we need it
-
-; if (Ls - Rs)  !=0 > there is an obstacle. start turning
-
-;if there is an obstacle. Avoid it 
-	cmp r2,r3
-	bne Avoid  ;aka if(r2 == r3) {Avoid} else{Check_Front}
-
-;else Ls == Rs. Check front for obstacle. if(obstacle){turn right} else {Correct_Course}
-
-
-Check_Front
-	sub r1,#Range
-	bmi Correct_Course  ;if(Fs >= Range){Correct course} else{Turn right}
-	
-	bl Right
-	
-	b Process_Exit
-
-Correct_Course  ; if(r9 ==0){Forward} else if(r9 >0){Left} else{Right}
-	cmp r9,#0
-	bne Correction
-	
-Go_Straight
-	bl Forward
-	b Process_Exit
-
-Correction
-	cmp r9,#0
-	bmi Go_Right
-
-	bl Left
-	
-	b Process_Exit
-	
-Go_Right
-	bl Right
-	b Process_Exit
-
-Avoid
-
-;left wheel
-
-	mov r0,#BaseSpeed
-
-	mul r4,r3,r0
-	udiv r4,r2 ; we will throw in k when we need it
-	
-	ldr r5,=Match1
-	str r4,[r5]  ;set the speed to the wheel. (need to check that the output is valid)
-	
-;right wheel
-	mul r5,r2,r0
-	udiv r5,r3 ; we will throw in k when we need it
-	
-	ldr r6,=Match2
-	str r5,[r6]  ;set the speed to the wheel. (need to check that the output is valid)
-	
-;store the angle bias
-	sub r5,r6
-	add r9,r5
-	
-
-Process_Exit
-	
-	pop {lr};restore return address
-
-	bx lr
-	
-	
-	
 	
 ;--------------Init stuff. This will be here untiil I figure out how this assembler works-------------------------------
 
@@ -309,6 +340,8 @@ INIT_PWM
  
  WRITEBITS #2,Matchcr
  
+ 
+ 
  ;WRITEBITS #2_00010010,Matchcr
 
 
@@ -335,21 +368,24 @@ INIT_ADC  ;targeting pins : p0.23 p0.24 p0.25  Fs Ls Rs
 	
 ;set the peripheral clock
 	SETBITS #(2_11 << 24),PclkSel0
-	
+	SETBITS #(1<<11),Adcr0; increase adc read prescale by 8
 	
 ;set the pimode-PINSEL to adc (i think the problem was here. Actually, it is)
-	SETBITS #(2_10101 << 14),PinSel1  ;2_101
+
+	CLEARBITS #(2_111111 << 14),PinSel1
+	SETBITS #(2_010101 << 14),PinSel1  ;2_0101
 	
 	
 ;No pullup no pull down
 
-	LDR R0,=PinMode0
-	MOV R1,#0xA8000      ;#0x28000
-	STR R1,[r0]
+	
+	CLEARBITS #(2_111111 << 14),PinMode1
+	SETBITS #(2_101010 << 14),PinMode1;#0xA8000      ;#0x28000
 	
 	
 	
-	SETBITS #(1 << 24),Adcr0 ; tell adc to start reading
+	
+
 	
 	BX LR
 	
