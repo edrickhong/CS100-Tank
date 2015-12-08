@@ -1,13 +1,19 @@
 
 	INCLUDE include.s
 		
-BaseSpeed equ 30 ;we will use 50 for now cos why not
-TurnSpeed equ 50
+BaseSpeed equ 70 ;we will use 50 for now cos why not
+TurnForwardSpeed equ 5
+TurnSpeed equ 100
 Factor equ 1
-Range equ 1
+ForwardRange equ 1000
+AdjacentRange equ 800;1000
+Delay_Time equ 5000
 
  
  ;We will be adjusting individual wheel speeds on the fly to do the turning
+ 
+ 
+ ;add a switch to decide to go lefr or right
 
     GLOBAL __main
 	AREA Main, CODE, READONLY
@@ -21,15 +27,21 @@ __main
 	ldr r0,=DDR0
 	mov r1,#2_1111
 	str r1,[r0]
-	
+	 
 	
 	mov r9,#0 ; we will store the angle bias into r9. This is a signed number
+	
+	
+	mov r10,#0 ; we will use this to see if we need to delay or not
+	
 	
 	
 	
 	
 	bl INIT_PWM
 	bl INIT_ADC
+	
+	bl Read_Sensor ;we will do some configuration
 
  
  
@@ -134,9 +146,6 @@ Converting_Z  ;FIXME:Right  We cannot seem to read from here
 	
 	ASR r3,#4
 	BIC r3,r4
-
-
-	nop
 	
 	
 	
@@ -146,65 +155,64 @@ Converting_Z  ;FIXME:Right  We cannot seem to read from here
 
 	
 	
-Process 
+Process   ; add correction
 
 ;r1 r2 and r3 are reserved  (Fs Ls Rs)
 
 	push {lr}
 	
-	
-;---------------Debug Sensors Start------------------
-
-
 	sub r4,r2,r3  ; L - R
-	
-	
-	cmp r4,#0
-	bpl Correct_Right
-	
-;case r4 < 0, turn left
-Go_Left
 
-	bl Left
-	
-	b Process_Exit
-	
-	
-Correct_Right ;course correct or go right
-
-	mov r5,#1900
+	ldr r5,=-AdjacentRange;-2099  
 	cmp r4,r5
-	bpl Go_Right
-
-; r4 < r5
-
-;Course Correction
-
-	cmp r1,#Range
-	bpl Go_Right  ; if front is in range (go right by default. set a flag to turn left or right)
-
-;else correct course
-	cmp r9,#0
 	bpl Right_Forward
 	
-	b Go_Left ; r9 <0
+Go_Left_Delay
+	ldr r10,=Delay_Time
 	
-Right_Forward
-	cbnz Go_Right 
-	
-	bl Forward ;r9 = 0
-	
+Go_Left  ; r4 < -1000, go left
+	bl Left
 	b Process_Exit
 	
+Right_Forward
+
+	mov r5,#AdjacentRange;1900
+	cmp r4,r5
+	bmi Forward_Correct
+	
+	
+	ldr r10,=Delay_Time
+	
 Go_Right
+	bl Right; r4 >= 1000, go right
+	b Process_Exit
+	
+Forward_Correct  
 
 
-; r4 >=r5
+	cmp r1,#ForwardRange
+	bpl Go_Left_Delay ; go left if there is something too close to the front of us
 
-	bl Right
+	mov r0,r9  ;no correction, go forward
+	cbz r0,Go_Forward
+	
+	cmp r10,#0  ;delay flag set, go forward
+	bne Delay_Forward
 
-;---------------Debug Sensors End------------------
+	cmp r9,#0 ; biased to right, correct left
+	bpl Go_Left
+	
+	
+	b Go_Right ;biased to left, correct right
+	
+Delay_Forward
 
+	sub r10,#1
+
+Go_Forward
+	bl Forward
+	
+	
 Process_Exit
 	
 	pop {lr};restore return address
@@ -241,7 +249,7 @@ Left
 	
 	;reset to the base speed
 	ldr r0,= Match1
-	mov r1, #BaseSpeed
+	mov r1, #TurnForwardSpeed
 	str r1,[r0]
 	 
 	ldr r0,=Match2
@@ -265,14 +273,12 @@ Right
 	str r1,[r0]
 	 
 	ldr r0,=Match2
-	mov r1, #BaseSpeed
+	mov r1, #TurnForwardSpeed
 	str r1,[r0]
 	
 	add r9,#1
 	
 	bx lr
-
-
 
 
 

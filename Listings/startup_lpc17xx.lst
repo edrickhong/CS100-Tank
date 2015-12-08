@@ -430,14 +430,13 @@ ARM Macro Assembler    Page 7
               00000000 
               00000200 
               00000000 
-Command Line: --debug --xref --cpu=Cortex-M3 --apcs=interwork --depend=.\object
-s\startup_lpc17xx.d -o.\objects\startup_lpc17xx.o -IC:\Users\c.terence\Desktop\
-cs100-tank\RTE -IC:\Users\c.terence\Desktop\cs100-tank\RTE\Device\LPC1769 -I"C:
-\Program Files (x86)\Keil_uvision5\ARM\PACK\ARM\CMSIS\4.4.0\CMSIS\Include" -I"C
-:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Device\Incl
-ude" --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 513" --pre
-define="_RTE_ SETA 1" --predefine="LPC175x_6x SETA 1" --list=.\listings\startup
-_lpc17xx.lst RTE\Device\LPC1769\startup_LPC17xx.s
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=.\objects\startup_lpc17xx.d -o.\objects\startup_lpc17xx.o -II:\cs1
+00-tank\RTE -II:\cs100-tank\RTE\Device\LPC1769 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\
+4.4.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Device\Include
+ --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 516" --predefi
+ne="_RTE_ SETA 1" --predefine="LPC175x_6x SETA 1" --list=.\listings\startup_lpc
+17xx.lst RTE\Device\LPC1769\startup_LPC17xx.s
 
 
 

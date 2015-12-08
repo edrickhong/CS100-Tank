@@ -82,17 +82,17 @@
         <Book>
           <Number>0</Number>
           <Title>MCB1700 Schematics (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700-schematics.pdf</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700-schematics.pdf</Path>
         </Book>
         <Book>
           <Number>1</Number>
           <Title>User Manual (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700.chm</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700.chm</Path>
         </Book>
         <Book>
           <Number>2</Number>
           <Title>MCB1700 Quick Start Guide (MCB1700)</Title>
-          <Path>C:\Program Files (x86)\Keil_uvision5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700_quickstart.pdf</Path>
+          <Path>C:\Keil_v5\ARM\PACK\Keil\LPC1700_DFP\2.1.0\Documents\mcb1700_quickstart.pdf</Path>
         </Book>
         <Book>
           <Number>3</Number>
@@ -138,10 +138,6 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
-          <Key>DLGUARM</Key>
-        </SetRegEntry>
-        <SetRegEntry>
-          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L50 -Z18 -C0 -M0 -T0</Name>
         </SetRegEntry>
@@ -158,7 +154,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U269304175 -O14 -S0 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD10000000 -FCFE0 -FN1 -FF0LPC_IAP_512.FLM -FS00 -FL080000 -FP0($$Device:LPC1769$Flash\LPC_IAP_512.FLM)</Name>
+          <Name>-U269304246 -O14 -S0 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight JTAG-DP") -D00(4BA00477) -L00(4) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD10000000 -FCFE0 -FN1 -FF0LPC_IAP_512.FLM -FS00 -FL080000 -FP0($$Device:LPC1769$Flash\LPC_IAP_512.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -215,6 +211,7 @@
       </DebugFlag>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
+      <bLintAuto>0</bLintAuto>
     </TargetOption>
   </Target>
 
